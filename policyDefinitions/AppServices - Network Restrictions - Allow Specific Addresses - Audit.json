@@ -1,0 +1,98 @@
+{
+    "properties": {
+        "displayName": "[Custom]: App Services - Network Restrictions - Allow Specific Addresses - Audit",
+        "policyType": "Custom",
+        "mode": "All",
+        "description": "This policy audits App Services Network Restrictions for specific IP addresses that should be allowed.",
+        "metadata": {
+            "category": "App Service"
+        },
+        "version": "1.0.0",
+        "parameters": {
+            "siteIpAddresses": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "Main Site IP Addresses",
+                    "description": "Main Site - The IP addresses that should be allowed"
+                }
+            },
+            "scmIpAddresses": {
+                "type": "Array",
+                "metadata": {
+                    "displayName": "SCM Site IP Addresses",
+                    "description": "SCM Site - The IP addresses that should be allowed"
+                }
+            },
+            "effect": {
+                "type": "String",
+                "metadata": {
+                    "displayName": "Effect",
+                    "description": "Enable or disable the execution of the policy"
+                },
+                "allowedValues": [
+                    "Audit",
+                    "Disabled"
+                ],
+                "defaultValue": "Audit"
+            }
+        },
+        "policyRule": {
+            "if": {
+                "allOf": [
+                    {
+                        "field": "type",
+                        "equals": "Microsoft.Web/sites/config"
+                    },
+                    {
+                        "anyOf": [
+                            {
+                                "count": {
+                                    "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*]",
+                                    "where": {
+                                        "allOf": [
+                                            {
+                                                "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*].ipAddress",
+                                                "notIn": "[parameters('siteIpAddresses')]"
+                                            },
+                                            {
+                                                "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*].action",
+                                                "equals": "Allow"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "greater": 0
+                            },
+                            {
+                                "count": {
+                                    "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*]",
+                                    "where": {
+                                        "allOf": [
+                                            {
+                                                "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*].ipAddress",
+                                                "notIn": "[parameters('scmIpAddresses')]"
+                                            },
+                                            {
+                                                "field": "Microsoft.Web/sites/config/web.ipSecurityRestrictions[*].action",
+                                                "equals": "Allow"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "greater": 0
+                            }
+                        ]
+                    }
+                ]
+            },
+            "then": {
+                "effect": "[parameters('effect')]"
+            }
+        },
+        "versions": [
+            "1.0.0"
+        ]
+    },
+    "type": "Microsoft.Authorization/policyDefinitions",
+    "name": "259ac8b5-7446-4f79-91e7-540604ebd9c6"
+}
