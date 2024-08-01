@@ -1,0 +1,214 @@
+{
+  "properties": {
+    "displayName": "Enforce Defender for Containers Settings",
+    "policyType": "Custom",
+    "mode": "All",
+    "metadata": {
+      "category": "Security Center",
+      "createdBy": "de9f1f70-34c1-4ee9-98a0-6e1e7d7b42a3",
+      "createdOn": "2024-07-24T18:29:08.8938986Z",
+      "updatedBy": "de9f1f70-34c1-4ee9-98a0-6e1e7d7b42a3",
+      "updatedOn": "2024-07-24T18:59:05.2798805Z"
+    },
+    "version": "1.0.0",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Effect",
+          "description": "Enable or disable the execution of the policy"
+        },
+        "allowedValues": [
+          "Audit",
+          "Deny",
+          "Disabled"
+        ],
+        "defaultValue": "Audit"
+      },
+      "isContainerRegistriesVulnerabilityAssessmentsEnabled": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Container Registries Vulnerability Assessments Enabled",
+          "description": "Controls the container registries vulnerability assessments add-on"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true"
+      },
+      "isAgentlessDiscoveryForKubernetesEnabled": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Agentless Discovery for Kubernetes Enabled",
+          "description": "Controls the agentless discovery for Kubernetes"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true"
+      },
+      "isContainerSensorEnabled": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Container Sensor Enabled",
+          "description": "Controls the Defender for Containers Sensor"
+        },
+        "allowedValues": [
+          "true",
+          "false"
+        ],
+        "defaultValue": "true"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Security/pricings"
+          },
+          {
+            "field": "name",
+            "equals": "Containers"
+          },
+          {
+            "count": {
+              "field": "Microsoft.Security/pricings/extensions[*]",
+              "where": {
+                "anyOf": [
+                  {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].name",
+                        "equals": "ContainerRegistriesVulnerabilityAssessments"
+                      },
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].isEnabled",
+                        "notEquals": "[parameters('isContainerRegistriesVulnerabilityAssessmentsEnabled')]"
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].name",
+                        "equals": "AgentlessDiscoveryForKubernetes"
+                      },
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].isEnabled",
+                        "notEquals": "[parameters('isAgentlessDiscoveryForKubernetesEnabled')]"
+                      }
+                    ]
+                  },
+                  {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].name",
+                        "notEquals": "ContainerSensor"
+                      },
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].isEnabled",
+                        "notEquals": "[parameters('isContainerSensorEnabled')]"
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            "notEquals": 0
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]",
+        "details": {
+          "type": "Microsoft.Security/pricings",
+          "name": "Containers",
+          "deploymentScope": "subscription",
+          "existenceScope": "subscription",
+          "roleDefinitionIds": [
+            "/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635"
+          ],
+          "existenceCondition": {
+            "allOf": [
+              {
+                "field": "Microsoft.Security/pricings/pricingTier",
+                "equals": "Standard"
+              },
+              {
+                "count": {
+                  "field": "Microsoft.Security/pricings/extensions[*]",
+                  "where": {
+                    "allOf": [
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].name",
+                        "equals": "ContainerRegistriesVulnerabilityAssessments"
+                      },
+                      {
+                        "field": "Microsoft.Security/pricings/extensions[*].isEnabled",
+                        "equals": "[parameters('isContainerRegistriesVulnerabilityAssessmentsEnabled')]"
+                      }
+                    ]
+                  }
+                },
+                "equals": 1
+              }
+            ]
+          },
+          "deployment": {
+            "location": "westeurope",
+            "properties": {
+              "mode": "incremental",
+              "parameters": {
+                "isContainerRegistriesVulnerabilityAssessmentsEnabled": {
+                  "value": "[parameters('isContainerRegistriesVulnerabilityAssessmentsEnabled')]"
+                }
+              },
+              "template": {
+                "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                "contentVersion": "1.0.0.0",
+                "parameters": {
+                  "isContainerRegistriesVulnerabilityAssessmentsEnabled": {
+                    "type": "String"
+                  }
+                },
+                "resources": [
+                  {
+                    "type": "Microsoft.Security/pricings",
+                    "apiVersion": "2023-01-01",
+                    "name": "Containers",
+                    "properties": {
+                      "pricingTier": "Standard",
+                      "extensions": [
+                        {
+                          "name": "ContainerRegistriesVulnerabilityAssessments",
+                          "isEnabled": "[parameters('isContainerRegistriesVulnerabilityAssessmentsEnabled')]"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "versions": [
+      "1.0.0"
+    ]
+  },
+  "id": "/providers/Microsoft.Management/managementGroups/73043c5d-205c-4462-beb9-13bebde5ec9e/providers/Microsoft.Authorization/policyDefinitions/8feab6b0-7620-4dca-b8ee-3a7660b5062e",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "name": "8feab6b0-7620-4dca-b8ee-3a7660b5062e",
+  "systemData": {
+    "createdBy": "admin@tylerrindelsgmail.onmicrosoft.com",
+    "createdByType": "User",
+    "createdAt": "2024-07-24T18:29:08.8609475Z",
+    "lastModifiedBy": "admin@tylerrindelsgmail.onmicrosoft.com",
+    "lastModifiedByType": "User",
+    "lastModifiedAt": "2024-07-24T18:59:05.2706431Z"
+  }
+}

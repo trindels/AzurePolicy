@@ -1,0 +1,64 @@
+{
+  "properties": {
+    "displayName": "Enforce DfC Defender for Containers Plan Settings",
+    "policyType": "Custom",
+    "mode": "All",
+    "metadata": {
+      "createdBy": "4366fe4c-0e7c-40c4-86ea-3499df332a15",
+      "createdOn": "2024-08-01T20:47:25.4116194Z",
+      "updatedBy": "4366fe4c-0e7c-40c4-86ea-3499df332a15",
+      "updatedOn": "2024-08-01T21:18:27.1246882Z"
+    },
+    "version": "1.0.0",
+    "parameters": {
+      "effect": {
+        "type": "String",
+        "metadata": {
+          "displayName": "Policy Effect",
+          "description": "The list of effects for resources."
+        },
+        "allowedValues": [
+          "audit",
+          "deny",
+          "disable"
+        ],
+        "defaultValue": "audit"
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "field": "type",
+            "equals": "Microsoft.Security/pricings"
+          },
+          {
+            "field": "name",
+            "equals": "Containers"
+          },
+          {
+            "field": "Microsoft.Security/pricings/pricingTier",
+            "notEquals": "Standard"
+          }
+        ]
+      },
+      "then": {
+        "effect": "[parameters('effect')]"
+      }
+    },
+    "versions": [
+      "1.0.0"
+    ]
+  },
+  "id": "/subscriptions/c662cbbb-410f-4d5b-bb44-bda05ed6355e/providers/Microsoft.Authorization/policyDefinitions/d9c6b542-5d2e-43aa-91a0-50da7828a622",
+  "type": "Microsoft.Authorization/policyDefinitions",
+  "name": "d9c6b542-5d2e-43aa-91a0-50da7828a622",
+  "systemData": {
+    "createdBy": "tylerrindels@microsoft.com",
+    "createdByType": "User",
+    "createdAt": "2024-08-01T20:47:25.3935216Z",
+    "lastModifiedBy": "tylerrindels@microsoft.com",
+    "lastModifiedByType": "User",
+    "lastModifiedAt": "2024-08-01T21:18:27.1127204Z"
+  }
+}
