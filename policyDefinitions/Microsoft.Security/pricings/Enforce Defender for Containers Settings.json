@@ -4,11 +4,7 @@
     "policyType": "Custom",
     "mode": "All",
     "metadata": {
-      "category": "Security Center",
-      "createdBy": "de9f1f70-34c1-4ee9-98a0-6e1e7d7b42a3",
-      "createdOn": "2024-07-24T18:29:08.8938986Z",
-      "updatedBy": "de9f1f70-34c1-4ee9-98a0-6e1e7d7b42a3",
-      "updatedOn": "2024-07-24T18:59:05.2798805Z"
+      "category": "Security Center"
     },
     "version": "1.0.0",
     "parameters": {
@@ -200,15 +196,6 @@
       "1.0.0"
     ]
   },
-  "id": "/providers/Microsoft.Management/managementGroups/73043c5d-205c-4462-beb9-13bebde5ec9e/providers/Microsoft.Authorization/policyDefinitions/8feab6b0-7620-4dca-b8ee-3a7660b5062e",
   "type": "Microsoft.Authorization/policyDefinitions",
-  "name": "8feab6b0-7620-4dca-b8ee-3a7660b5062e",
-  "systemData": {
-    "createdBy": "admin@tylerrindelsgmail.onmicrosoft.com",
-    "createdByType": "User",
-    "createdAt": "2024-07-24T18:29:08.8609475Z",
-    "lastModifiedBy": "admin@tylerrindelsgmail.onmicrosoft.com",
-    "lastModifiedByType": "User",
-    "lastModifiedAt": "2024-07-24T18:59:05.2706431Z"
-  }
+  "name": "8feab6b0-7620-4dca-b8ee-3a7660b5062e"
 }
